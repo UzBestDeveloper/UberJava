@@ -66,6 +66,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private LocationCallback locationCallback;
     SupportMapFragment mapFragment;
 
+    private boolean isFirstTime = true;
+
+
     //Online System
     DatabaseReference onlineRef, currentUserRef, driversLocationRef;
     GeoFire geoFire;
@@ -74,6 +77,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             if (snapshot.exists() && null != currentUserRef) {
                 currentUserRef.onDisconnect().removeValue();
+                isFirstTime = true;
             }
         }
 
@@ -111,9 +115,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
 
         locationRequest = new LocationRequest();
-        locationRequest.setSmallestDisplacement(10f);
+        locationRequest.setSmallestDisplacement(50f);
         locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setFastestInterval(10000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationCallback = new LocationCallback() {
@@ -141,8 +145,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                             (key, error) -> {
                                 if (error != null) {
                                     Snackbar.make(mapFragment.getView(), error.getMessage(), Snackbar.LENGTH_SHORT).show();
-                                } else {
-                                    Snackbar.make(mapFragment.getView(), "You're online", Snackbar.LENGTH_SHORT).show();
                                 }
                             });
 
@@ -226,6 +228,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         } catch (Resources.NotFoundException e) {
             Log.e("UBER_ERROR", e.getMessage());
         }
+
+        Snackbar.make(mapFragment.getView(), "You're online", Snackbar.LENGTH_SHORT).show();
+
 
     }
 
